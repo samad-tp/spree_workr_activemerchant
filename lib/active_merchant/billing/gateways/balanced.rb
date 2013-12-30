@@ -256,25 +256,47 @@ module ActiveMerchant #:nodoc:
       # ==== Parameters
       #
       # * <tt>credit_card</tt> --
+      #def store(credit_card, options = {})
+      #  requires!(options, :email)
+      #  post = {}
+      #  account_uri = create_or_find_account(post, options)
+      #  if credit_card.respond_to? :number
+      #    card_uri = add_credit_card(post, credit_card, options)
+      #  else
+      #    card_uri = associate_card_to_account(account_uri, credit_card)
+      #  end
+        
+      #  is_test = false
+      #  if @marketplace_uri
+      #    is_test = (@marketplace_uri.index("TEST") ? true : false)
+      #  end
+        
+      #  Response.new(true, "Card stored", {}, :test => is_test, :authorization => [card_uri, account_uri].compact.join(';'))
+      #rescue Error => ex
+      #  failed_response(ex.response)
+      #end
+      
+      
+      # Stores a card and email address
+      #
+      # ==== Parameters
+      #
+      # * <tt>credit_card</tt> --
       def store(credit_card, options = {})
         requires!(options, :email)
         post = {}
         account_uri = create_or_find_account(post, options)
         if credit_card.respond_to? :number
-          card_uri = add_credit_card(post, credit_card, options)
+          add_credit_card(post, credit_card, options)
         else
-          card_uri = associate_card_to_account(account_uri, credit_card)
+          associate_card_to_account(account_uri, credit_card)
+          credit_card
         end
-        
-        is_test = false
-        if @marketplace_uri
-          is_test = (@marketplace_uri.index("TEST") ? true : false)
-        end
-        
-        Response.new(true, "Card stored", {}, :test => is_test, :authorization => [card_uri, account_uri].compact.join(';'))
       rescue Error => ex
         failed_response(ex.response)
       end
+
+      
 
       private
 
